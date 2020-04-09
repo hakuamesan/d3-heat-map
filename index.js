@@ -3,11 +3,11 @@ let length =0;
 
 let h = 500;
 let w = 1000;          
-let padding = 50;
+let padding = 70;
 
 let plotData = [];
 let colors = ["blue", "white", "black", "gray"]
-let months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 let baseTemp = 0;
 let years = [];
@@ -50,18 +50,14 @@ let xScale = d3.scaleLinear()
               .domain([minYr, maxYr])
               .range([padding, w-padding])
 
-let y = d3.scaleLinear()
-          .domain(months)
-          .range([h-padding, padding])
-
-let yScale = d3.scaleLinear()
-               .domain([0,12])
+let yScale = d3.scaleBand()
+               .domain(months)
                .range([h-padding, padding])
 
 let xAxis = d3.axisBottom(xScale)
               .tickFormat(d3.format("d"))
 
-let yAxis = d3.axisLeft(y)
+let yAxis = d3.axisLeft(yScale)
 
 
 svg.append("g")
@@ -73,7 +69,7 @@ svg.append("g")
 svg.append("g")
     .attr("id", "y-axis")
     .attr("class", "axis")
-    .attr("transform", "translate(" + padding + ",0)")
+    .attr("transform", "translate(" + padding  + ",0)")
     .call(yAxis)
 
 
@@ -90,17 +86,17 @@ var tooltip = d3.select('#main')
   .attr('id', 'tooltip')
   .style('opacity', 0)
 
-
+let cellh = (h-padding)/12;
 
 svg.selectAll("rect")
 .data(dataset)
 .enter()
 .append("rect")
 .attr("class","cell")
-.attr("x", (d,i) => xScale(years[i]))
-.attr("y", (d,i) => yScale(varMonth[i]-1))
+.attr("x", (d,i) => xScale(d.year))
+.attr("y", (d,i) => {console.log(yScale(months[d.month-1])); return yScale(months[d.month-1])-5; })
 .attr("width", w / (maxYr-minYr))
-.attr("height", h / months.length)
+.attr("height", cellh)
 .style("fill", (d,i) => myColors(variance[i]))
 .attr("data-month", (d,i) => d.month-1)
 .attr("data-year", (d,i) => d.year)
